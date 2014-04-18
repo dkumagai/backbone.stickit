@@ -154,7 +154,7 @@
       };
 
       initializeAttributes(this, $el, config, model, modelAttr);
-
+      initializeStyles(this, $el, config, model, modelAttr);
       initializeVisible(this, $el, config, model, modelAttr);
 
       if (modelAttr) {
@@ -318,6 +318,22 @@
         observeModelEvent(model, view, 'change:' + attr, config, updateAttr);
       });
       updateAttr();
+    });
+  };
+  
+  var initializeStyles = function(view, $el, config, model, modelAttr) {
+    _.each(config.styles || [], function(styleConfig) {
+      var observed, updateStyle;
+      styleConfig = _.clone(styleConfig);
+      observed = styleConfig.observe || (styleConfig.observe = modelAttr),
+      updateStyle = function() {
+        var val = getAttr(model, observed, styleConfig, view);
+        $el.css(styleConfig.name, val);
+      };
+      _.each(_.flatten([observed]), function(attr) {
+        observeModelEvent(model, view, 'change:' + attr, updateStyle);
+      });
+      updateStyle();
     });
   };
 
